@@ -1,0 +1,15 @@
+{
+    "env": {
+        "docker":{
+            "imageName": "tomcat9",
+            "containerName": "tomcat9",
+        }
+    },
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "files.exclude": {
+    //    "target": true
+    },
+    "search.exclude": {
+        "target": true
+    }
+}

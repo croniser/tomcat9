@@ -1,0 +1,74 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "BUILD TASK",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true,
+      },
+      "dependsOn": [
+        "BUILD ALL",
+        //"Maven: Build",
+      ],
+    },
+    {
+      "label": "BUILD ALL",
+      "type": "shell",
+      "group": {
+        "kind": "build"
+      },
+      "dependsOn": ["Docker: Build", "Docker: Run", "Maven: Build"],
+      "dependsOrder": "sequence",
+      "presentation": {
+        "reveal": "always",
+        "echo": true,
+        "focus": true,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Maven: Build",
+      "type": "shell",
+      "command": "mvn",
+      "args": ["clean", "deploy"],
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "Docker: Build",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "build",
+        "-t",
+        "${config:env.docker.imageName}",
+        "docker"
+      ],
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "Docker: Run",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "run",
+        "-d",
+        "-p",
+        "8080:8080",
+        "-p",
+        "5005:5005",
+        "--name",
+        "${config:env.docker.containerName}",
+        "${config:env.docker.imageName}",
+      ],
+      "group": {
+        "kind": "build"
+      }
+    }
+  ]
+}

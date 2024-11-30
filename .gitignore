@@ -1,0 +1,6 @@
+# Mac metadata
+._*
+.DS_Store
+
+/target
+/.mnt/*
