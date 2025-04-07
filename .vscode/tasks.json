@@ -19,7 +19,6 @@
       "group": {
         "kind": "build"
       },
-      "dependsOn": ["Docker: Build", "Docker: Run", "Maven: Build"],
       "dependsOrder": "sequence",
       "presentation": {
         "reveal": "always",

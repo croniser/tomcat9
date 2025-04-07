@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:9.1.0
+    container_name: tomcat-mysql9
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: demo
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+
+  tomcat9:
+    image: tomcat9
+    container_name: tomcat9
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      - mysql
