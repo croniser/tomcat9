@@ -1,28 +1,35 @@
 ARG TOMCAT_VERSION=9.0.107
 FROM tomcat:${TOMCAT_VERSION}
 
-ARG JPDA_PORT=5005 \
-    CATALINA_HOME=/usr/local/tomcat \
-    RESOURCE_DIR=resources/
-
-LABEL org.opencontainers.image.title="Tomcat 9 JDK 21 Docker Image" \
-      org.opencontainers.image.description="Apache Tomcat 9 server with OpenJDK 21, configured for JPDA debugging and custom resources." \
-      org.opencontainers.image.version="${VERSION}" \
-      org.opencontainers.image.revision="${GIT_COMMIT}" \
-      org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.source="https://github.com/croniser/tomcat9" \
-      org.opencontainers.image.authors="annie.onomous@example.com"
+ARG BUILD_DATE=unspecified
+ARG CATALINA_HOME=/usr/local/tomcat
+ARG GIT_COMMIT=unspecified
+ARG JPDA_PORT=5005
+ARG RESOURCES_DIR=resources/
+ARG VERSION=unspecified
 
 ENV CATALINA_HOME=${CATALINA_HOME} \
-    JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${JPDA_PORT}" \
-    ENABLE_JPDA=false
+    ENABLE_JPDA=false \
+    JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${JPDA_PORT}"
 
-WORKDIR $CATALINA_HOME
+LABEL   org.opencontainers.image.title="Tomcat 9 JDK 21 Docker Image" \
+        org.opencontainers.image.description="Apache Tomcat 9 server with OpenJDK 21, configured for JPDA debugging and custom resources." \
+        org.opencontainers.image.version="${VERSION}" \
+        org.opencontainers.image.revision="${GIT_COMMIT}" \
+        org.opencontainers.image.created="${BUILD_DATE}" \
+        org.opencontainers.image.source="https://github.com/croniser/tomcat9" \
+        org.opencontainers.image.authors="annie.onomous@example.com" \
+        org.opencontainers.image.licenses="Apache-2.0"
+
+WORKDIR ${CATALINA_HOME}
 
 RUN rm -rf ${CATALINA_HOME}/webapps/ROOT
-COPY ${RESOURCE_DIR} ${CATALINA_HOME}
-RUN ln -s ${CATALINA_HOME}/webapps.dist/manager ${CATALINA_HOME}/webapps/
+COPY ${RESOURCES_DIR} ${CATALINA_HOME}
+RUN [ ! -L ${CATALINA_HOME}/webapps/manager ] && ln -s ${CATALINA_HOME}/webapps.dist/manager ${CATALINA_HOME}/webapps/ || true
 
 EXPOSE 8080 ${JPDA_PORT}
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/ || exit 1
 
 CMD ["/bin/sh", "-c", "if [ \"$ENABLE_JPDA\" = \"true\" ]; then catalina.sh jpda run; else catalina.sh run; fi"]

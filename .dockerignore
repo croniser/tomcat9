@@ -1,0 +1,12 @@
+.DS_Store
+.git
+.vscode
+*.md
+docker/Dockerfile
+docker-compose.yml
+src
+target
+WEB-INF
+index.html
+pom.xml
+README.md
