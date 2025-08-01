@@ -1,9 +1,14 @@
 services:
   tomcat9:
-    image: tomcat9
-    container_name: tomcat9-container
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        RESOURCE_DIR: docker/resources/
+    image: "${DOCKER_REGISTRY:-docker.io}/${DOCKER_REPO:-gcroniser}/${DOCKER_IMAGE:-tomcat9-jdk21}:${DOCKER_TAG:-latest}"
+    container_name: ${DOCKER_IMAGE:-tomcat9-jdk21}
+    environment:
+      - ENABLE_JPDA=true
     ports:
-      - "8080:8080"
-      - "5005:5005"
-    # depends_on:
-    #   - mysql
+      - "${PORT_TOMCAT:-8080}:8080"
+      - "${PORT_JPDA:-5005}:5005"

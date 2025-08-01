@@ -1,22 +1,28 @@
-FROM tomcat:9.0.107-jdk21-temurin
+ARG TOMCAT_VERSION=9.0.107
+FROM tomcat:${TOMCAT_VERSION}
 
-ENV CATALINA_HOME=/usr/local/tomcat
-ENV JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+ARG JPDA_PORT=5005 \
+    CATALINA_HOME=/usr/local/tomcat \
+    RESOURCE_DIR=resources/
+
+LABEL org.opencontainers.image.title="Tomcat 9 JDK 21 Docker Image" \
+      org.opencontainers.image.description="Apache Tomcat 9 server with OpenJDK 21, configured for JPDA debugging and custom resources." \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${GIT_COMMIT}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.source="https://github.com/croniser/tomcat9" \
+      org.opencontainers.image.authors="annie.onomous@example.com"
+
+ENV CATALINA_HOME=${CATALINA_HOME} \
+    JPDA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${JPDA_PORT}" \
+    ENABLE_JPDA=false
 
 WORKDIR $CATALINA_HOME
 
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
-COPY resources/ $CATALINA_HOME
+RUN rm -rf ${CATALINA_HOME}/webapps/ROOT
+COPY ${RESOURCE_DIR} ${CATALINA_HOME}
+RUN ln -s ${CATALINA_HOME}/webapps.dist/manager ${CATALINA_HOME}/webapps/
 
-RUN ln -s ${CATALINA_HOME}/webapps.dist/manager ${CATALINA_HOME}/webapps/;
+EXPOSE 8080 ${JPDA_PORT}
 
-EXPOSE 8080 5005
-
-CMD ["catalina.sh", "jpda", "run"]
-
-
-# docker build -t gcroniser/tomcat9 .
-# docker run -p 8080:8080 tomcat9
-# docker tag tomcat9 gcroniser/tomcat9:latest
-# docker login
-# docker push gcroniser/tomcat9:latest
+CMD ["/bin/sh", "-c", "if [ \"$ENABLE_JPDA\" = \"true\" ]; then catalina.sh jpda run; else catalina.sh run; fi"]
