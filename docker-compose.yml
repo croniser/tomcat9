@@ -1,5 +1,5 @@
 services:
-  tomcat9:
+  tomcat:
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -8,8 +8,8 @@ services:
         GIT_COMMIT: "${GIT_COMMIT}"
         VERSION: "${VERSION}"
         RESOURCES_DIR: ${RESOURCES_DIR:-docker/resources/}
-    image: "${DOCKER_REGISTRY:-docker.io}/${DOCKER_REPO:-gcroniser}/${DOCKER_IMAGE:-tomcat9-jdk21}:${DOCKER_TAG:-latest}"
-    container_name: "${DOCKER_IMAGE:-tomcat9-jdk21}"
+    image: "${DOCKER_REGISTRY:-docker.io}/${DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG:-latest}"
+    container_name: "${CONTAINER_NAME}"
     environment:
       ENABLE_JPDA: "${ENABLE_JPDA:-false}"
     ports:
