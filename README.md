@@ -23,9 +23,9 @@ docker run -d \
   gcroniser/tomcat11-jdk21:1.0.2
   ```
 
-- ```docker tag gcroniser/tomcat11-jdk21:1.0.2 gcroniser/tomcat11:1.0.2```
+- ```docker tag gcroniser/tomcat11-jdk21:1.0.2 gcroniser/tomcat11-jdk21:1.0.2```
 - ```docker login```
-- ```docker push gcroniser/tomcat11:1.0.2```
+- ```docker push gcroniser/tomcat11-jdk21:1.0.2```
 
 
 navigate to http://localhost:8080/tomcat-template/test
